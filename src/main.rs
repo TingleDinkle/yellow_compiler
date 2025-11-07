@@ -5,8 +5,6 @@ use std::collections::{HashMap, VecDeque};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::fmt;
 use std::io::{self, Write};
-use std::cell::RefCell;
-use std::rc::Rc;
 
 // ============================================================================
 // QUANTUM STATE - Variables exist in superposition
@@ -14,8 +12,8 @@ use std::rc::Rc;
 
 #[derive(Debug, Clone)]
 enum QuantumState {
-    Collapsed(Value),
-    Superposition(Vec<Value>),
+    Collapsed(Box<Value>),
+    Superposition(Vec<Box<Value>>),
     Entangled(String), // Reference to another variable
     Phantom,           // Exists but shouldn't
 }
@@ -39,7 +37,7 @@ struct Infection {
 struct TemporalEcho {
     timestamp: u64,
     variable_name: String,
-    ghost_value: Value,
+    ghost_value: Box<Value>,
     stability: f64,
 }
 
@@ -911,14 +909,14 @@ impl Parser {
 // VALUE - Now with quantum states
 // ============================================================================
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 enum Value {
     Number(f64),
     String(String),
     Boolean(bool),
     Null,
     Function { params: Vec<String>, body: Vec<Stmt> },
-    Quantum(QuantumState),  // Superposed values
+    Quantum(Box<QuantumState>),  // Superposed values
 }
 
 impl fmt::Display for Value {
@@ -929,14 +927,16 @@ impl fmt::Display for Value {
             Value::Boolean(b) => write!(f, "{}", b),
             Value::Null => write!(f, "pallid"),
             Value::Function { .. } => write!(f, "<act>"),
-            Value::Quantum(QuantumState::Superposition(vals)) => {
-                write!(f, "<superposed: {} possibilities>", vals.len())
-            }
-            Value::Quantum(QuantumState::Entangled(name)) => {
-                write!(f, "<entangled with {}>", name)
-            }
-            Value::Quantum(QuantumState::Phantom) => write!(f, "<phantom>"),
-            Value::Quantum(QuantumState::Collapsed(v)) => write!(f, "{}", v),
+            Value::Quantum(qs) => match **qs {
+                QuantumState::Superposition(ref vals) => {
+                    write!(f, "<superposed: {} possibilities>", vals.len())
+                }
+                QuantumState::Entangled(ref name) => {
+                    write!(f, "<entangled with {}>", name)
+                }
+                QuantumState::Phantom => write!(f, "<phantom>"),
+                QuantumState::Collapsed(ref v) => write!(f, "{}", v),
+            },
         }
     }
 }
@@ -1011,17 +1011,17 @@ impl Interpreter {
     fn spawn_phantom(&mut self) {
         let phantom_names = vec!["shadow", "echo", "whisper", "void", "fragment"];
         let name = phantom_names[(get_nanos() % phantom_names.len() as u64) as usize];
-        
-        let value = Value::Quantum(QuantumState::Phantom);
+
+        let value = Value::Quantum(Box::new(QuantumState::Phantom));
         self.phantom_variables.insert(name.to_string(), value);
-        
+
         println!("⚠ Phantom variable '{}' manifests from the void...", name);
     }
     
     fn manifest_temporal_echo(&mut self) {
         if let Some(echo) = self.temporal_echoes.pop() {
             if echo.stability > 0.3 {
-                self.set_var(echo.variable_name.clone(), echo.ghost_value.clone());
+                self.set_var(echo.variable_name.clone(), (*echo.ghost_value).clone());
                 println!("Temporal echo of '{}' bleeds through from past execution", echo.variable_name);
             }
         }
@@ -1076,16 +1076,16 @@ impl Interpreter {
         let echo = TemporalEcho {
             timestamp: get_nanos(),
             variable_name: name.clone(),
-            ghost_value: value.clone(),
+            ghost_value: Box::new(value.clone()),
             stability: self.sanity / 100.0,
         };
         self.temporal_echoes.push(echo);
-        
+
         // Limit echo buffer
         if self.temporal_echoes.len() > 50 {
             self.temporal_echoes.drain(0..10);
         }
-        
+
         if let Some(frame) = self.call_stack.last_mut() {
             frame.insert(name, value);
         } else {
@@ -1330,12 +1330,12 @@ impl Interpreter {
         } else {
             self.global_env.keys().cloned().collect()
         };
-        
+
         for name in var_names {
             if name != source && pseudo_random(name.len()) > 0.7 {
                 if let Some(infection) = self.infections.get(source).cloned() {
                     self.infections.insert(name.clone(), Infection {
-                        source: name,
+                        source: name.clone(),
                         virulence: infection.virulence * 0.7,
                         mutation_vector: get_nanos(),
                     });
@@ -1355,11 +1355,14 @@ impl Interpreter {
                 }
             }
             Value::Number(n) => *n > (0.5 + drift * 0.3),
-            Value::Quantum(QuantumState::Superposition(vals)) => {
-                // Collapse superposition
-                let idx = (pseudo_random(get_nanos() as usize) * vals.len() as f64) as usize % vals.len();
-                self.is_truthy(&vals[idx])
-            }
+            Value::Quantum(qs) => match **qs {
+                QuantumState::Superposition(ref vals) => {
+                    // Collapse superposition
+                    let idx = (pseudo_random(get_nanos() as usize) * vals.len() as f64) as usize % vals.len();
+                    self.is_truthy(&vals[idx])
+                }
+                _ => false,
+            },
             _ => false,
         }
     }
@@ -1433,20 +1436,23 @@ impl Interpreter {
             Expr::Superpose(exprs) => {
                 let mut values = Vec::new();
                 for e in exprs {
-                    values.push(self.eval_expr(e)?);
+                    values.push(Box::new(self.eval_expr(e)?));
                 }
                 println!("⟨ψ| Quantum superposition created with {} states", values.len());
-                Ok(Value::Quantum(QuantumState::Superposition(values)))
+                Ok(Value::Quantum(Box::new(QuantumState::Superposition(values))))
             }
             Expr::Collapse(expr) => {
                 let val = self.eval_expr(*expr)?;
                 match val {
-                    Value::Quantum(QuantumState::Superposition(vals)) => {
-                        let idx = (pseudo_random(get_nanos() as usize) * vals.len() as f64) as usize % vals.len();
-                        let collapsed = vals[idx].clone();
-                        println!("|ψ⟩ Wavefunction collapsed to: {}", collapsed);
-                        Ok(collapsed)
-                    }
+                    Value::Quantum(qs) => match *qs {
+                        QuantumState::Superposition(ref vals) => {
+                            let idx = (pseudo_random(get_nanos() as usize) * vals.len() as f64) as usize % vals.len();
+                            let collapsed = vals[idx].clone();
+                            println!("|ψ⟩ Wavefunction collapsed to: {}", collapsed);
+                            Ok(*collapsed)
+                        }
+                        _ => Ok(Value::Quantum(qs)),
+                    },
                     v => Ok(v),
                 }
             }
@@ -1462,9 +1468,9 @@ impl Interpreter {
             }
             Expr::Entangle(var1, var2) => {
                 println!("⟨⟩ Entangling '{}' with '{}'", var1, var2);
-                
+
                 if let Some(val2) = self.get_var(&var2) {
-                    self.set_var(var1.clone(), Value::Quantum(QuantumState::Entangled(var2.clone())));
+                    self.set_var(var1.clone(), Value::Quantum(Box::new(QuantumState::Entangled(var2.clone()))));
                     Ok(val2)
                 } else {
                     Ok(Value::Null)
@@ -1544,7 +1550,10 @@ impl Interpreter {
             Value::Boolean(b) => *b,
             Value::Number(n) => *n != 0.0,
             Value::Null => false,
-            Value::Quantum(QuantumState::Phantom) => pseudo_random(get_nanos() as usize) > 0.5,
+            Value::Quantum(qs) => match **qs {
+                QuantumState::Phantom => pseudo_random(get_nanos() as usize) > 0.5,
+                _ => true,
+            },
             _ => true,
         }
     }
@@ -1876,9 +1885,9 @@ fn repl() {
                 println!("║    manifest(x)                        ║");
                 println!("║                                       ║");
                 println!("║  Control:                             ║");
-                println!("║    Hastur(condition) { }              ║");
-                println!("║    rift(condition) { }                ║");
-                println!("║    Cassilda(condition) { }            ║");
+                println!("║    Hastur(condition) {{ }}              ║");
+                println!("║    rift(condition) {{ }}                ║");
+                println!("║    Cassilda(condition) {{ }}            ║");
                 println!("║                                       ║");
                 println!("║  Meta commands:                       ║");
                 println!("║    status, fragments, infections      ║");
