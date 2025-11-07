@@ -4,8 +4,6 @@
 > And strange moons circle through the skies,  
 > But stranger still is Lost Carcosa."
 
-Reality is negotiable. Sanity is not.
-
 ## What Is This
 
 The Yellow Compiler is a programming language where code execution actively degrades program stability. Variables mutate without permission. Your AST rewrites itself during parsing. Numbers drift from their assigned values. Control flow becomes non-Euclidean. The longer your program runs, the less reliable it becomes.
