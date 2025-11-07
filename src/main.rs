@@ -1022,7 +1022,7 @@ impl Interpreter {
         if let Some(echo) = self.temporal_echoes.pop() {
             if echo.stability > 0.3 {
                 self.set_var(echo.variable_name.clone(), echo.ghost_value.clone());
-                println!("⏳ Temporal echo of '{}' bleeds through from past execution", echo.variable_name);
+                println!("Temporal echo of '{}' bleeds through from past execution", echo.variable_name);
             }
         }
     }
@@ -1254,7 +1254,7 @@ impl Interpreter {
                 if self.sanity > 100.0 {
                     self.sanity = 100.0;
                 }
-                println!("⚓ Reality temporarily stabilized");
+                println!("Reality temporarily stabilized");
                 Ok(None)
             }
             Stmt::ExprStmt(expr) => {
