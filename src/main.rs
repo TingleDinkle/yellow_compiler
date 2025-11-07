@@ -5,6 +5,7 @@ use std::collections::{HashMap, VecDeque};
 use std::time::{SystemTime, UNIX_EPOCH};
 use std::fmt;
 use std::io::{self, Write};
+use regex;
 
 // ============================================================================
 // QUANTUM STATE - Variables exist in superposition
@@ -1254,7 +1255,10 @@ impl Interpreter {
                     return Ok(None);
                 }
                 for pattern in &self.forbidden_patterns {
-                    if code.contains(pattern) {
+                    // Check for word boundaries to avoid false positives
+                    // Pattern must be surrounded by non-alphanumeric characters or string boundaries
+                    let pattern_with_boundaries = format!(r"(?i)\b{}\b", regex::escape(pattern));
+                    if regex::Regex::new(&pattern_with_boundaries).unwrap().is_match(&code) {
                         println!("⚠ Forbidden incantation '{}' detected. Whisper denied.", pattern);
                         self.whisper_count -= 1;
                         return Ok(None);
