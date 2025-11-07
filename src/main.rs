@@ -1728,12 +1728,12 @@ fn run_program(source: &str) {
     let mut lexer = Lexer::new(source);
     let tokens = lexer.tokenize();
     
-    println!("📝 Lexing complete. Corruption level: {:.2}%", lexer.corruption_level * 100.0);
+    println!("Lexing complete. Corruption level: {:.2}%", lexer.corruption_level * 100.0);
     
     let mut parser = Parser::new(tokens);
     match parser.parse_program() {
         Ok(ast) => {
-            println!("🔮 Parsing complete. Sanity: {:.1}%", parser.sanity);
+            println!("Parsing complete. Sanity: {:.1}%", parser.sanity);
             println!("⚠ AST mutations: {}", parser.ast_mutations);
             println!("\n╔════════════════════════════════════════╗");
             println!("║  Beginning execution...                ║");
