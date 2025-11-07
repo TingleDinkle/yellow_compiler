@@ -554,8 +554,6 @@ Robert W. Chambers, for "The King in Yellow"
 
 H.P. Lovecraft, for teaching us that some knowledge corrupts
 
-Every programmer who thought "What if the compiler fought back?"
-
 ## Final Warning
 
 This language will lie to you. It will corrupt your data. It will invert your logic. It will manifest variables that shouldn't exist and delete ones that should.
