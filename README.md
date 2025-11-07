@@ -12,7 +12,7 @@ The Yellow Compiler is a programming language where code execution actively degr
 
 This is not a bug. This is the design.
 
-Inspired by Robert W. Chambers' "The King in Yellow," this language treats code as a contagion and execution as a descent into programmatic madness. Every operation costs sanity. Every variable can become infected. Memory is unreliable. Past executions haunt current ones through temporal echoes.
+Inspired by Robert W. Chambers' "The King in Yellow," this language treats code as a contagion and execution as a descent into programmatic madness. Every operation costs sanity. Every variable can become infected. Memory is unreliable. Past executions haunt current ones.
 
 ## Installation
 
