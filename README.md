@@ -548,14 +548,7 @@ Before submitting:
 
 ## License
 
-This code is released under whatever license allows maximum distribution while accepting zero liability. Use at your own risk. The authors assume no responsibility for:
-
-- Lost sanity
-- Corrupted state
-- Temporal paradoxes
-- Existential dread
-- Production incidents
-- The Yellow Sign
+This project is licensed under the MIT License.
 
 ## Acknowledgments
 
