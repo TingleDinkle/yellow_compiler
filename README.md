@@ -45,7 +45,7 @@ If you wanted safety, you chose the wrong compiler.
 
 ### Keywords
 
-The language uses theatrical and esoteric terminology. Get used to it.
+The language uses theatrical and esoteric terminology. Get used to this:
 
 - `mask` - Variable declaration/assignment
 - `echo` - Output (replaces print)
