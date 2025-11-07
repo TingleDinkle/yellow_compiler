@@ -956,8 +956,11 @@ struct Interpreter {
     reality_anchor: SystemTime,
     mutations: u64,
     reality_stable: bool,
-    phantom_variables: HashMap<String, Value>,  // Hallucinations
-    generated_code: Vec<String>,  // Whispered code
+    phantom_variables: HashMap<String, Value>,
+    generated_code: Vec<String>,
+    whisper_count: usize,
+    max_whispers: usize,
+    forbidden_patterns: Vec<String>,
 }
 
 impl Interpreter {
@@ -975,6 +978,15 @@ impl Interpreter {
             reality_stable: true,
             phantom_variables: HashMap::new(),
             generated_code: Vec::new(),
+            whisper_count: 0,
+            max_whispers: 10,
+            forbidden_patterns: vec![
+                "whisper".to_string(),
+                "infect".to_string(),
+                "rift".to_string(),
+                "carcosa".to_string(),
+                "system".to_string(),
+            ],
         }
     }
     
@@ -1229,21 +1241,47 @@ impl Interpreter {
                 Ok(None)
             }
             Stmt::Whisper(code) => {
+                // Security checks
+                self.whisper_count += 1;
+                if self.whisper_count > self.max_whispers {
+                    println!("⚠ Whisper limit exceeded. The void rejects further manifestations.");
+                    self.whisper_count -= 1;
+                    return Ok(None);
+                }
+                if code.len() > 1000 {
+                    println!("⚠ Whisper exceeds maximum length. Reality cannot contain it.");
+                    self.whisper_count -= 1;
+                    return Ok(None);
+                }
+                for pattern in &self.forbidden_patterns {
+                    if code.contains(pattern) {
+                        println!("⚠ Forbidden incantation '{}' detected. Whisper denied.", pattern);
+                        self.whisper_count -= 1;
+                        return Ok(None);
+                    }
+                }
+
                 println!("◈ Whisper manifests: {}", code);
                 self.generated_code.push(code.clone());
-                
+
                 // Execute whispered code
                 let mut lexer = Lexer::new(&code);
                 let tokens = lexer.tokenize();
                 let mut parser = Parser::new(tokens);
-                
+
                 match parser.parse_program() {
                     Ok(ast) => {
+                        if ast.len() > 10 {
+                            println!("⚠ Whisper AST too complex. Sanity check failed.");
+                            self.whisper_count -= 1;
+                            return Ok(None);
+                        }
                         self.sanity -= 5.0;
                         self.execute(ast)
                     }
                     Err(_) => {
                         println!("⚠ Whisper fails to manifest properly");
+                        self.whisper_count -= 1;
                         Ok(None)
                     }
                 }
