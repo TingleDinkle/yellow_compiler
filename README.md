@@ -572,3 +572,6 @@ The King awaits your programs.
 *The twin suns sink behind the lake,*  
 *The shadows lengthen*  
 *In Carcosa."*
+
+# NOTICE
+I have started the process of incorporating and enhancing this project to it's max capability, the new repo for that expansion will be SEPERATE to this one. It shall be called TKIY (or The King In Yellow) Code Editor.
