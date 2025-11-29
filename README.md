@@ -1,4 +1,4 @@
-# The Yellow Compiler v2.0
+# The Yellow Compiler 
 
 > "Strange is the night where black stars rise,  
 > And strange moons circle through the skies,  
