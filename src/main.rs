@@ -1,4 +1,4 @@
-// The Yellow Compiler v2.0 - Reality is negotiable
+// The Yellow Compiler - Reality is negotiable
 // "Have you seen the Yellow Sign?"
 
 use std::collections::{HashMap, VecDeque};
@@ -1740,7 +1740,7 @@ echo(sanity_test);
 "#;
 
     println!("\n╔════════════════════════════════════════════╗");
-    println!("║  EXECUTING: The Yellow Compiler v2.0      ║");
+    println!("║  EXECUTING: The Yellow Compiler       ║");
     println!("╚════════════════════════════════════════════╝\n");
     
     run_program(example_program);
@@ -1757,7 +1757,7 @@ echo(sanity_test);
 fn print_opening() {
     println!("\n╔═══════════════════════════════════════════════════════╗");
     println!("║                                                       ║");
-    println!("║         𝕿ℍ𝔼  𝕐𝔼𝕃𝕃𝕆𝕎  ℂ𝕆𝕄ℙ𝕀𝕃𝔼ℝ  v2.0           ║");
+    println!("║         𝕿ℍ𝔼  𝕐𝔼𝕃𝕃𝕆𝕎  ℂ𝕆𝕄ℙ𝕀𝕃𝔼ℝ             ║");
     println!("║                                                       ║");
     println!("║  \"Strange is the night where black stars rise,      ║");
     println!("║   And strange moons circle through the skies,        ║");
