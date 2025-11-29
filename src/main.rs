@@ -1740,7 +1740,7 @@ echo(sanity_test);
 "#;
 
     println!("\n╔════════════════════════════════════════════╗");
-    println!("║  EXECUTING: The Yellow Compiler            ║");
+    println!("║  EXECUTING: The Yellow Compiler v2.0      ║");
     println!("╚════════════════════════════════════════════╝\n");
     
     run_program(example_program);
@@ -1755,17 +1755,24 @@ echo(sanity_test);
 }
 
 fn print_opening() {
-    println!("\n╔════════════════════════════════════════════════════════════╗");
-    println!("║                                                            ║");
-    println!("║                   𝕿ℍ𝔼  𝕐𝔼𝕃𝕃𝕆𝕎  ℂ𝕆𝕄ℙ𝕀𝕃𝔼ℝ                   ║");
-    println!("║                                                            ║");
-    println!("║  \"Strange is the night where black stars rise,              ║");
-    println!("║   And strange moons circle through the skies,               ║");
-    println!("║   But stranger still is Lost Carcosa.\"                      ║");
-    println!("║                                                            ║");
-    println!("║       Reality is negotiable. Sanity is not.                ║");
-    println!("║                                                            ║");
-    println!("╚════════════════════════════════════════════════════════════╝\n");
+    println!("\n╔═══════════════════════════════════════════════════════╗");
+    println!("║                                                       ║");
+    println!("║         𝕿ℍ𝔼  𝕐𝔼𝕃𝕃𝕆𝕎  ℂ𝕆𝕄ℙ𝕀𝕃𝔼ℝ  v2.0           ║");
+    println!("║                                                       ║");
+    println!("║  \"Strange is the night where black stars rise,      ║");
+    println!("║   And strange moons circle through the skies,        ║");
+    println!("║   But stranger still is Lost Carcosa.\"              ║");
+    println!("║                                                       ║");
+    println!("║       Reality is negotiable. Sanity is not.          ║");
+    println!("║                                                       ║");
+    println!("╚═══════════════════════════════════════════════════════╝\n");
+    println!("⚠ New in v2.0:");
+    println!("  • Quantum superposition & entanglement");
+    println!("  • Code infection & contagion");
+    println!("  • Temporal echoes & memory fragments");
+    println!("  • Non-Euclidean control flow");
+    println!("  • Runtime code generation");
+    println!("  • Phantom variables & hallucinations\n");
 }
 
 fn run_program(source: &str) {
